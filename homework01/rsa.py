@@ -13,8 +13,14 @@ def is_prime(n: int) -> bool:
     >>> is_prime(8)
     False
     """
-    # PUT YOUR CODE HERE
-    pass
+    if n == 1:
+        return False
+    if n % 2 == 0:
+        return n == 2
+    d = 3
+    while d * d <= n and n % d != 0:
+        d += 2
+    return d * d > n
 
 
 def gcd(a: int, b: int) -> int:
@@ -27,7 +33,9 @@ def gcd(a: int, b: int) -> int:
     1
     """
     # PUT YOUR CODE HERE
-    pass
+    while b:
+        a, b = b, a % b
+    return a
 
 
 def multiplicative_inverse(e: int, phi: int) -> int:
@@ -39,7 +47,19 @@ def multiplicative_inverse(e: int, phi: int) -> int:
     23
     """
     # PUT YOUR CODE HERE
-    pass
+    # https://kpfu.ru/docs/F366166681/mzi.pdf c 23
+    mx, mn = max(e, phi), min(e, phi)
+
+    divs = []
+    while (mx % mn) != 0:
+        divs.append(mx // mn)
+        mx, mn = mn, mx % mn
+
+    x, y = 0, 1
+
+    for i in range(len(divs) - 2, -2, -1):
+        x, y = y, x - y * (divs[i + 1])
+    return y % phi
 
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
@@ -48,10 +68,10 @@ def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[in
     elif p == q:
         raise ValueError("p and q cannot be equal")
 
-    # n = pq
+    n = p * q
     # PUT YOUR CODE HERE
 
-    # phi = (p-1)(q-1)
+    phi = (p - 1) * (q - 1)
     # PUT YOUR CODE HERE
 
     # Choose an integer e such that e and phi(n) are coprime
@@ -85,7 +105,7 @@ def decrypt(pk: tp.Tuple[int, int], ciphertext: tp.List[int]) -> str:
     # Unpack the key into its components
     key, n = pk
     # Generate the plaintext based on the ciphertext and key using a^b mod m
-    plain = [chr((char ** key) % n) for char in ciphertext]
+    plain = [chr((char**key) % n) for char in ciphertext]
     # Return the array of bytes as a string
     return "".join(plain)
 
