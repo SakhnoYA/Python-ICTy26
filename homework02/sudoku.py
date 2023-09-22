@@ -1,6 +1,6 @@
 import pathlib
-import typing as tp
 import random as random
+import typing as tp
 
 T = tp.TypeVar("T")
 
@@ -141,13 +141,14 @@ def solve(grid: tp.List[tp.List[str]]) -> tp.Optional[tp.List[tp.List[str]]]:
     pos = find_empty_positions(grid)
     if pos is None:
         return grid
-    row, col = pos
-    for value in find_possible_values(grid, pos):
-        grid[row][col] = value
-        solved_sudoku = solve(grid)
-        if solved_sudoku is not None:
-            return solved_sudoku
-        grid[row][col] = "."
+    else:
+        row, col = pos
+        for value in find_possible_values(grid, pos):
+            grid[row][col] = value
+            solved_sudoku = solve(grid)
+            if solved_sudoku is not None:
+                return solved_sudoku
+            grid[row][col] = "."
     return None
 
 
@@ -190,15 +191,16 @@ def generate_sudoku(N: int) -> tp.List[tp.List[str]]:
     True
     """
     N = min(81, N)
-    new_grid = solve([["." for _ in range(9)] for _ in range(9)])
+    new_grid = solve([["."] * 9 for _ in range(9)])
+    if new_grid is None:
+        return [["."] * 9 for _ in range(9)]
     deleted_values = 0
     while deleted_values < 81 - N:
         random_col = random.randint(0, 8)
         random_row = random.randint(0, 8)
-        if new_grid is not None:
-            if new_grid[random_col][random_row] != ".":
-                new_grid[random_col][random_row] = "."
-                deleted_values += 1
+        if new_grid[random_col][random_row] != ".":
+            new_grid[random_col][random_row] = "."
+            deleted_values += 1
     return new_grid
 
 
