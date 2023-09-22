@@ -47,7 +47,19 @@ def multiplicative_inverse(e: int, phi: int) -> int:
     23
     """
     # PUT YOUR CODE HERE
-    pass
+    # https://kpfu.ru/docs/F366166681/mzi.pdf c 23
+    mx, mn = max(e, phi), min(e, phi)
+
+    divs = []
+    while (mx % mn) != 0:
+        divs.append(mx // mn)
+        mx, mn = mn, mx % mn
+
+    x, y = 0, 1
+
+    for i in range(len(divs) - 2, -2, -1):
+        x, y = y, x - y * (divs[i + 1])
+    return y % phi
 
 
 def generate_keypair(p: int, q: int) -> tp.Tuple[tp.Tuple[int, int], tp.Tuple[int, int]]:
