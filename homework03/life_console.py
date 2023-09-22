@@ -1,7 +1,7 @@
-import curses
 import argparse
-from pathlib import Path
+import curses
 from datetime import datetime
+from pathlib import Path
 
 from life import GameOfLife
 from ui import UI
@@ -12,11 +12,11 @@ class Console(UI):
         super().__init__(life)
 
     def draw_borders(self, screen) -> None:
-        """ Отобразить рамку. """
+        """Отобразить рамку."""
         screen.border("|", "|", "-", "-", "#", "#", "#", "#")
 
     def draw_grid(self, screen) -> None:
-        """ Отобразить состояние клеток. """
+        """Отобразить состояние клеток."""
         for pos_y in range(self.life.cols):
             for pos_x in range(self.life.rows):
                 symbol = arguments.symbol if self.life.curr_generation[pos_x][pos_y] else " "
@@ -30,7 +30,9 @@ class Console(UI):
         curses.curs_set(0)
         limits = win.getmaxyx()
         if arguments.rows > limits[0] - 1 or arguments.cols > limits[1] - 1:
-            raise ValueError(f'Невозможно отрисовать картинку такого размера. Максимальный размер {limits[0]}x{limits[1]}.')
+            raise ValueError(
+                f"Невозможно отрисовать картинку такого размера. Максимальный размер {limits[0]}x{limits[1]}."
+            )
         curses.noecho()
         win = curses.newwin(self.life.rows + 2, self.life.cols + 2, 0, 0)
         win.nodelay(True)
@@ -40,12 +42,12 @@ class Console(UI):
             if not self.life.is_changing or self.life.is_max_generations_exceeded:
                 running = False
             char = win.getch()
-            if char == ord(' '):
+            if char == ord(" "):
                 pause = not pause
-            if char == ord('s'):
+            if char == ord("s"):
                 save_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
                 self.life.save(Path(f"saves/life_{save_time}.txt"))
-            if char == ord('q'):
+            if char == ord("q"):
                 running = False
             if not pause:
                 win.clear()
@@ -55,6 +57,7 @@ class Console(UI):
                 self.life.step()
                 win.refresh()
         curses.endwin()
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="GameOfLife")

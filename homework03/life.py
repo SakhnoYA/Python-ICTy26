@@ -31,10 +31,7 @@ class GameOfLife:
     def create_grid(self, randomize: bool = False) -> Grid:
         # Copy from previous assignment
         if randomize:
-            return [
-                [random.randint(0, 1) for _ in range(self.cols)]
-                for _ in range(self.rows)
-            ]
+            return [[random.randint(0, 1) for _ in range(self.cols)] for _ in range(self.rows)]
         return [[0 for _ in range(self.cols)] for _ in range(self.rows)]
 
     def get_neighbours(self, cell: Cell) -> Cells:
@@ -81,7 +78,7 @@ class GameOfLife:
         """
         Не превысило ли текущее число поколений максимально допустимое.
         """
-        return self.generations >= self.max_generations
+        return self.generations >= self.max_generations  # type: ignore
 
     @property
     def is_changing(self) -> bool:
