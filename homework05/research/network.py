@@ -5,8 +5,7 @@ import community as community_louvain
 import matplotlib.pyplot as plt
 import networkx as nx
 import pandas as pd
-
-from vkapi.friends import MutualFriends, get_friends, get_mutual
+from vkapi.friends import get_friends, get_mutual
 
 
 def ego_network(
@@ -28,9 +27,8 @@ def ego_network(
         ]
     mutuals = get_mutual(user_id, target_uids=friends)
     for person in mutuals:
-        mutual = tp.cast(MutualFriends, person)
-        for common in mutual["common_friends"]:
-            result.append((mutual["id"], common))
+        for common in person["common_friends"]:  # type: ignore
+            result.append((person["id"], common))  # type: ignore
     return result
 
 
