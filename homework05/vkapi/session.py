@@ -2,7 +2,7 @@ import typing as tp
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests_toolbelt import sessions
+from requests_toolbelt import sessions  # type: ignore
 from urllib3.util.retry import Retry
 
 DEFAULT_TIMEOUT = 5
