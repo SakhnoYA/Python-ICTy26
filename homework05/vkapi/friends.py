@@ -28,7 +28,24 @@ def get_friends(
     :param fields: Список полей, которые нужно получить для каждого пользователя.
     :return: Список идентификаторов друзей пользователя или список пользователей.
     """
-    pass
+    response = session.get(
+        "friends.get",
+        params={
+            "access_token": config.VK_CONFIG["access_token"],
+            "v": config.VK_CONFIG["version"],
+            "count": count,
+            "user_id": user_id if user_id is not None else "",
+            "fields": ",".join(fields) if fields is not None else "",
+            "offset": offset,
+        },
+    )
+    if "error" in response.json() or not response.ok:
+        raise APIError(response.json()["error"]["error_msg"])
+    else:
+        return FriendsResponse(
+            count=response.json()["response"]["count"],
+            items=response.json()["response"]["items"],
+        )
 
 
 class MutualFriends(tp.TypedDict):
@@ -57,4 +74,42 @@ def get_mutual(
     :param offset: Смещение, необходимое для выборки определенного подмножества общих друзей.
     :param progress: Callback для отображения прогресса.
     """
-    pass
+    if progress is None:
+        progress = lambda x: x
+    mutual_friends = []
+
+    # ln = math.ceil(len(target_uids) / 100) if target_uids is not None else 1
+
+    for i in progress(range(math.ceil(len(target_uids) / 100))) if target_uids is not None else [1]:
+        response = session.get(
+            "friends.getMutual",
+            params={
+                "access_token": config.VK_CONFIG["access_token"],
+                "source_uid": source_uid,
+                "target_uid": target_uid,
+                "target_uids": target_uids,
+                "order": order,
+                "count": count,
+                "offset": offset + i * 100,
+                "v": config.VK_CONFIG["version"],
+            },
+        )
+        response_json = response.json()
+        if "error" in response_json or not response.ok:
+            raise APIError(response_json["error"]["error_msg"])
+        for arg in response_json["response"]:
+            if isinstance(arg, int):
+                mutual_friends.append(arg)
+            else:
+                mutual_friends.append(
+                    MutualFriends(  # type: ignore
+                        id=arg["id"],
+                        common_friends=arg["common_friends"],
+                        common_count=arg["common_count"],
+                    )
+                )
+
+        if i % 2 == 0:
+            time.sleep(1)
+
+    return mutual_friends
