@@ -7,13 +7,27 @@ def extract_news(parser):
     news_list = []
 
     # PUT YOUR CODE HERE
-
+    # news_list: NewsList = []
+    links = parser.select("a[rel='nofollow noreferrer']")
+    subtext = parser.select(".subtext")
+    for pos, item in enumerate(links):
+        title = item.getText()
+        href = item.get("href", None)
+        points = int(subtext[pos].select(".score")[0].getText().split()[0])
+        comments = subtext[pos].select("a:last-of-type")[1].getText().split()[0]
+        comments = 0 if comments.isalpha() else int(comments)
+        user = subtext[pos].select(".hnuser")[0].getText()
+        if user is None:
+            user = "None"
+        news_list.append({"title": title, "url": href, "points": points, "comments": comments,  "author": user})
     return news_list
 
 
 def extract_next_page(parser):
     """ Extract next page URL """
     # PUT YOUR CODE HERE
+
+    return parser.select(".morelink")[0].get("href")
 
 
 def get_news(url, n_pages=1):
